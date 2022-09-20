@@ -14,6 +14,8 @@
 		8E45BC6E28D7B1B000A259D8 /* NattyOrNotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E45BC6D28D7B1B000A259D8 /* NattyOrNotTests.swift */; };
 		8E45BC7828D7B1B000A259D8 /* NattyOrNotUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E45BC7728D7B1B000A259D8 /* NattyOrNotUITests.swift */; };
 		8E45BC7A28D7B1B000A259D8 /* NattyOrNotUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E45BC7928D7B1B000A259D8 /* NattyOrNotUITestsLaunchTests.swift */; };
+		8E45BC8D28D87D9400A259D8 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E45BC8C28D87D9400A259D8 /* ImagePicker.swift */; };
+		8E45BC9028D8860400A259D8 /* NatyOrNotClassifier2.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 8E45BC8F28D8860400A259D8 /* NatyOrNotClassifier2.mlmodel */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,6 +46,9 @@
 		8E45BC7328D7B1B000A259D8 /* NattyOrNotUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NattyOrNotUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8E45BC7728D7B1B000A259D8 /* NattyOrNotUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NattyOrNotUITests.swift; sourceTree = "<group>"; };
 		8E45BC7928D7B1B000A259D8 /* NattyOrNotUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NattyOrNotUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		8E45BC8C28D87D9400A259D8 /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
+		8E45BC8E28D8813500A259D8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		8E45BC8F28D8860400A259D8 /* NatyOrNotClassifier2.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = NatyOrNotClassifier2.mlmodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -94,9 +99,12 @@
 		8E45BC5B28D7B1A900A259D8 /* NattyOrNot */ = {
 			isa = PBXGroup;
 			children = (
+				8E45BC8E28D8813500A259D8 /* Info.plist */,
 				8E45BC5C28D7B1A900A259D8 /* NattyOrNotApp.swift */,
 				8E45BC5E28D7B1A900A259D8 /* ContentView.swift */,
+				8E45BC8C28D87D9400A259D8 /* ImagePicker.swift */,
 				8E45BC6028D7B1AF00A259D8 /* Assets.xcassets */,
+				8E45BC8F28D8860400A259D8 /* NatyOrNotClassifier2.mlmodel */,
 				8E45BC6228D7B1AF00A259D8 /* Preview Content */,
 			);
 			path = NattyOrNot;
@@ -258,7 +266,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				8E45BC5F28D7B1A900A259D8 /* ContentView.swift in Sources */,
+				8E45BC8D28D87D9400A259D8 /* ImagePicker.swift in Sources */,
 				8E45BC5D28D7B1A900A259D8 /* NattyOrNotApp.swift in Sources */,
+				8E45BC9028D8860400A259D8 /* NatyOrNotClassifier2.mlmodel in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -420,6 +430,8 @@
 				DEVELOPMENT_TEAM = C493VDTW7S;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = NattyOrNot/Info.plist;
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "We want to save the filtered photo.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -449,6 +461,8 @@
 				DEVELOPMENT_TEAM = C493VDTW7S;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = NattyOrNot/Info.plist;
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "We want to save the filtered photo.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
