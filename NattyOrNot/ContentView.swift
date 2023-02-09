@@ -152,7 +152,7 @@ struct ContentView: View {
 
      
     @State var enteredNumber = 40
-    @State var total = 2
+    @State var total = 0
     
     
     
@@ -192,6 +192,7 @@ struct ContentView: View {
     
     
     func classify() {
+        total = 0
         guard let image = inputImage,
               let resizedImage = image.resizeImageTo(size:CGSize(width: 224, height: 224)),
               let buffer = resizedImage.convertToBuffer() else {
@@ -204,9 +205,21 @@ struct ContentView: View {
             let results = output.classLabelProbs.sorted { $0.1 > $1.1 }
             
             
+            //print(results)
             let result = results.map { (key, value) in
                 return "\(key) = \(String(format: "%.2f", value * 100))%"
             }.joined(separator: "\n")
+            
+            let result2 = results.map { (key, value) in
+                return value * 100
+            }
+
+            
+            steroidsIndex = result2[0]
+            naturalIndex = result2[1]
+            
+            //print(steroidsIndex)
+            
             self.classificationLabel = result
         }
     }
@@ -243,15 +256,16 @@ struct ContentView: View {
                         .fontWeight(.bold)
 //                    HStack(spacing: 40) {
 //                        VStack(alignment: .center) {
-//                            Text("98%")
+//                            Text("\(steroidsIndex)%")
+//
 //                                .font(.largeTitle)
 //                                .fontWeight(.black)
 //                                .foregroundColor(.purple)
-//                            Text("Steroids \(classificationLabel)")
+//                            Text("Steroids")
 //                        }
 //
 //                        VStack(alignment: .center) {
-//                            Text("2%")
+//                            Text("\(naturalIndex)%")
 //                                .font(.largeTitle)
 //                                .fontWeight(.black)
 //                                .foregroundColor(.green)
@@ -281,7 +295,8 @@ struct ContentView: View {
                         .buttonStyle(NeumorphicButton(shape: RoundedRectangle(cornerRadius: 20)))
                         
                         Button {
-                            //self.addNumberWithRollingAnimation()
+                            
+                            self.addNumberWithRollingAnimation()
                             //classifyImage()
                             classify()
                         } label: {
