@@ -3,7 +3,7 @@ import CoreML
 import Vision
 
 
-struct HomeView: View {
+struct SecondaryView: View {
     @State private var selection: Int = 0
     
     @State private var showingImagePicker = false

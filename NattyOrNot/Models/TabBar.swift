@@ -1,44 +1,85 @@
-//
-//  TabBarView2.swift
-//  NattyOrNot
-//
-//  Created by Roman Liukevich on 2/24/23.
-//
-
 import SwiftUI
 
 struct TabBar: View {
-    let bgColor: Color = .init(white: 0.9)
-    var number: Int = 9
-    let backgroundColor = Color.offWhite
-    
-   
-    
-    
-    
     
     var body: some View {
-        ZStack {
-            backgroundView
- 
-            TabsLayoutView()
-                .frame(height: 90, alignment: .center)
-                .clipped()
-        }
-        .frame(height: 90, alignment: .center)
-        .padding(.horizontal, 60)
-        
-        
-        //        ZStack (alignment: .bottom) {
-        //            backgroundColor
-        //                .ignoresSafeArea()
-        //            VStack(spacing: 70) {
-        //
-        //            }
-        //            .padding(.horizontal)
-        //        }
+        TabsLayoutView() 
     }
+}
+
+
+struct TabsLayoutView: View {
+    @State var selectedTab: Tab = .home
+    @Namespace var namespace
     
+    let bgColor: Color = .init(white: 0.9)
+    let backgroundColor = Color.offWhite
+
+    let gradient = LinearGradient(gradient: Gradient(colors: [.yellow, .purple]), startPoint: .topLeading, endPoint: .bottomTrailing)
+    
+    var body: some View {
+        
+        NavigationView {
+            ZStack {
+                Color.offWhite.edgesIgnoringSafeArea(.all)
+                VStack {
+                    if selectedTab == .home {
+                        HomeView()
+                    } else if selectedTab == .second {
+                        SecondaryView()
+                    } else if selectedTab == .info {
+                        InfoView()
+                    }
+                    
+                    ZStack {
+                        backgroundView
+                        
+                        
+                        HStack {
+                            Spacer(minLength: 0)
+                            ForEach(Tab.allCases) { tab in
+                                
+                                TabButton(tab: tab, selectedTab: $selectedTab, namespace: namespace)
+                                    .frame(width: 55, height: 55, alignment: .center)
+                                
+                                Spacer(minLength: 0)
+                            }
+                            .onTapGesture {
+                                print(namespace)
+                            }
+                        }
+                        .frame(height: 90, alignment: .center)
+                        .clipped()
+                    }
+                    .frame(height: 90, alignment: .center)
+                    .padding(.horizontal, 60)
+                    
+                    Spacer()
+                }
+            }
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    HStack {
+                        
+                        Text("Natty Or Not")
+                            .font(.largeTitle)
+                            .fontWeight(.black)
+                        
+                            .foregroundStyle(Color.gray)
+                            .padding()
+                        
+                        
+                    }
+                }
+            }
+        }
+        
+        
+        
+        
+        
+    }
     
     @ViewBuilder private var backgroundView: some View {
         LinearGradient(colors: [.init(white: 0.9), .white], startPoint: .top, endPoint: .bottom)
@@ -48,35 +89,6 @@ struct TabBar: View {
             }
             .shadow(color: .black.opacity(0.5), radius: 5, x: 0, y: 8)
             .clipShape(RoundedRectangle(cornerRadius: 25, style: .continuous))
-    }
-}
-
-
-struct TabsLayoutView: View {
-    @State var selectedTab: Tab = .home
-    @Namespace var namespace
-    //@Binding var selected2 = "home"
-    
-    var body: some View {
-        
-        HStack {
-            Spacer(minLength: 0)
-            ForEach(Tab.allCases) { tab in
-                
-                TabButton(tab: tab, selectedTab: $selectedTab, namespace: namespace)
-                    .frame(width: 55, height: 55, alignment: .center)
-                
-                Spacer(minLength: 0)
-            }
-            .onTapGesture {
-                print(namespace)
-            }
-        }
-        //            if selectedTab == .home {
-        //                //HomeView()
-        //                ContentView()
-        //            }
-        
     }
     
     
@@ -91,9 +103,6 @@ struct TabsLayoutView: View {
             Button {
                 withAnimation(.spring(response: 0.6, dampingFraction: 0.6, blendDuration: 0.6)) {
                     selectedTab = tab
-                    
-                    selectTab2 = "\(tab)"
-                    print(selectTab2)
                     
                 }
             } label: {
@@ -112,8 +121,8 @@ struct TabsLayoutView: View {
                             .matchedGeometryEffect(id: "Selected Tab", in: namespace)
                     }
                     
-                    Image(systemName: tab.icon)
-                        .font(.system(size: 20, weight: .semibold, design: .rounded))
+                    Image(tab.icon)
+                        .font(.system(size: 20, weight: .bold, design: .rounded))
                         .foregroundColor(isSelected ? tab.color : .gray)
                         .scaleEffect(isSelected ? 1 : 0.9)
                         .animation(isSelected ? .spring(response: 0.5, dampingFraction: 0.3, blendDuration: 1) : .spring(), value: selectedTab)
@@ -139,18 +148,18 @@ enum Tab: Int, Identifiable, CaseIterable, Comparable {
         lhs.rawValue < rhs.rawValue
     }
     
-    case home, game, apps
+    case home, second, info
     
     internal var id: Int { rawValue }
     
     var icon: String {
         switch self {
         case .home:
-            return "house.fill"
-        case .game:
-            return "gamecontroller.fill"
-        case .apps:
-            return "square.stack.3d.up.fill"
+            return "pills"
+        case .second:
+            return "syringe"
+        case .info:
+            return "list.clipboard"
             
         }
     }
@@ -159,9 +168,9 @@ enum Tab: Int, Identifiable, CaseIterable, Comparable {
         switch self {
         case .home:
             return "Home"
-        case .game:
+        case .second:
             return "Games"
-        case .apps:
+        case .info:
             return "Apps"
             
         }
@@ -171,9 +180,9 @@ enum Tab: Int, Identifiable, CaseIterable, Comparable {
         switch self {
         case .home:
             return .indigo
-        case .game:
+        case .second:
             return .pink
-        case .apps:
+        case .info:
             return .orange
             
         }
