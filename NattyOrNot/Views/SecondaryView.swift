@@ -10,30 +10,23 @@ struct SecondaryView: View {
     @State private var inputImage: UIImage?
     @State private var image: Image?
     
+    @State private var steroidsIndex: Double = 0.0
+    @State private var naturalIndex: Double = 0.0
     
-    @State private var steroidsIndex = 0.0
-    @State private var naturalIndex = 0.0
-    
-    @State private var imageDictionary = [
-        "natty" : 0.0,
-        "fake natty" : 0.0
-    ]
-    
-    let model = NatyOrNotClassifier2()
+    let model = NatyOrNotClassifierFiller()
     @State private var classificationLabel: String = "fake natty = 0% \n natty = 0%"
+    @State private var classifyDidPressed: Bool = false
     
     var request: VNCoreMLRequest?
     let image1 = UIImage(named: "chris")
     
-    
-    @State var enteredNumber = 40
+    @State var enteredNumber = 0
     @State var total = 0
+
     
     var body: some View {
         
-        
         VStack {
-            
             ZStack {
                 Color.offWhite
                     //.ignoresSafeArea()
@@ -43,6 +36,9 @@ struct SecondaryView: View {
                     Spacer()
                     Button {
                         showingImagePicker.toggle()
+                        naturalIndex = 0.0
+                        steroidsIndex = 0.0
+                        classifyDidPressed = false
                     } label: {
                         HStack {
                             RoundedRectangle(cornerRadius: 30)
@@ -57,48 +53,37 @@ struct SecondaryView: View {
                             
                             //.padding()
                         }
-                        
-                        
                     }
                     .buttonStyle(NeumorphicButton(shape: RoundedRectangle(cornerRadius: 20)))
                     .padding(.horizontal, 25)
                     
                     
-                    //here the results
-                    Text(classificationLabel)
-                        .font(.title2)
-                        .fontWeight(.bold)
-                        .foregroundColor(.black)
+                    // MARK: results tab
                     
-                    
-                    
-                    
-                    //                    HStack(spacing: 40) {
-                    //                        VStack(alignment: .center) {
-                    //                            Text("\(steroidsIndex)%")
-                    //
-                    //                                .font(.largeTitle)
-                    //                                .fontWeight(.black)
-                    //                                .foregroundColor(.purple)
-                    //                            Text("Steroids")
-                    //                        }
-                    //
-                    //                        VStack(alignment: .center) {
-                    //                            Text("\(naturalIndex)%")
-                    //                                .font(.largeTitle)
-                    //                                .fontWeight(.black)
-                    //                                .foregroundColor(.green)
-                    //                            Text("Natural")
-                    //                        }
-                    //
-                    //                    }
-                    
-                    
-                    //Spacer()
-                    
+                    HStack(spacing: 40) {
+                        VStack(alignment: .center) {
+                            Text("\(steroidsIndex.formatted())%")
+                                .font(.largeTitle)
+                                .fontWeight(.black)
+                                .foregroundColor(.purple)
+                            Text("Steroids")
+                        }
+                        
+                        VStack(alignment: .center) {
+                            Text("\(naturalIndex.formatted())%")
+                                .font(.largeTitle)
+                                .fontWeight(.black)
+                                .foregroundColor(.green)
+                            Text("Natural")
+                        }
+                    }
+
                     HStack {
                         Button {
                             showingImagePicker.toggle()
+                            naturalIndex = 0.0
+                            steroidsIndex = 0.0
+                            classifyDidPressed = false
                         } label: {
                             HStack {
                                 Image(systemName: "photo.on.rectangle.angled")
@@ -112,13 +97,15 @@ struct SecondaryView: View {
                         }
                         .buttonStyle(NeumorphicButton(shape: RoundedRectangle(cornerRadius: 20)))
                         
-                        
                         Spacer()
                         Button {
                             
-                            self.addNumberWithRollingAnimation()
-                            //classifyImage()
-                            classify()
+                            if !classifyDidPressed {
+                                classify()
+                                writeDescription()
+                                //addNumberWithRollingAnimation()
+                                classifyDidPressed = true
+                            }
                         } label: {
                             Image(systemName: "wand.and.stars")
                                 .foregroundColor(.gray)
@@ -126,33 +113,88 @@ struct SecondaryView: View {
                                 .padding(15)
                         }
                         .buttonStyle(NeumorphicButton(shape: RoundedRectangle(cornerRadius: 20)))
-                        
                     }
                     .padding(.horizontal, 25)
-                    
-                    //TabBarView()
-                    //.padding(.vertical, 30)
                     Spacer()
-                    
                 }
             }
-            
         }
-       
         .onChange(of: inputImage) { _ in loadImage() }
         .sheet(isPresented: $showingImagePicker) {
             ImagePicker(image: $inputImage)
         }
-        
-        
-        
     }
     
+    
+    // MARK: image classifier
     
     func loadImage() {
         guard let inputImage = inputImage else { return }
         image = Image(uiImage: inputImage)
     }
+    
+    func classify() {
+        total = 0
+        guard let image = inputImage,
+              let resizedImage = image.resizeImageTo(size:CGSize(width: 224, height: 224)),
+              let buffer = resizedImage.convertToBuffer() else {
+            return
+        }
+        
+        let output = try? model.prediction(image: buffer)
+        
+        if let output = output {
+            let results = output.classLabelProbs.sorted { $0.1 > $1.1 }
+            let result = results.map { (key, value) in
+                return "\(key) = \(String(format: "%.f", value * 100))%"
+            }.joined(separator: "\n")
+            self.classificationLabel = result
+        }
+    }
+    
+    
+    
+    func writeDescription() {
+        let array = classificationLabel.components(separatedBy: CharacterSet.newlines)
+        let inputStringFirst = array[0].hasPrefix("f") ? array[0] : array[1]
+        let inputStringSecond = array[0].hasPrefix("f") ? array[1] : array[0]
+        let numberPattern = #"[-+]?(\d*[.])?\d+"#
+        
+        if let regex = try? NSRegularExpression(pattern: numberPattern, options: []) {
+            let range = NSRange(location: 0, length: inputStringFirst.utf16.count)
+            if let match = regex.firstMatch(in: inputStringFirst, options: [], range: range) {
+                let numberRange = Range(match.range, in: inputStringFirst)!
+                if let number = Double(inputStringFirst[numberRange]) {
+                    steroidsIndex = number.rounded(.towardZero)
+                } else {
+                    print("Failed to convert matched string to Double.")
+                }
+            } else {
+                print("No numbers found in the input string.")
+            }
+        } else {
+            print("Failed to create regular expression.")
+        }
+        
+        
+        if let regex = try? NSRegularExpression(pattern: numberPattern, options: []) {
+            let range = NSRange(location: 0, length: inputStringSecond.utf16.count)
+            if let match = regex.firstMatch(in: inputStringSecond, options: [], range: range) {
+                let numberRange = Range(match.range, in: inputStringSecond)!
+                if let number = Double(inputStringSecond[numberRange]) {
+                    naturalIndex = number.rounded(.towardZero)
+                    enteredNumber = Int(naturalIndex)
+                } else {
+                    print("Failed to convert matched string to Double.")
+                }
+            } else {
+                print("No numbers found in the input string.")
+            }
+        } else {
+            print("Failed to create regular expression.")
+        }
+    }
+    
     
     func addNumberWithRollingAnimation() {
         withAnimation {
@@ -178,50 +220,4 @@ struct SecondaryView: View {
             }
         }
     }
-    
-    
-    
-    
-    func classify() {
-        total = 0
-        guard let image = inputImage,
-              let resizedImage = image.resizeImageTo(size:CGSize(width: 224, height: 224)),
-              let buffer = resizedImage.convertToBuffer() else {
-            return
-        }
-        
-        let output = try? model.prediction(image: buffer)
-        
-        if let output = output {
-            let results = output.classLabelProbs.sorted { $0.1 > $1.1 }
-            
-            
-            //print(results)
-            let result = results.map { (key, value) in
-                return "\(key) = \(String(format: "%.2f", value * 100))%"
-            }.joined(separator: "\n")
-            
-            let result2 = results.map { (key, value) in
-                return value * 100
-            }
-            
-            
-            steroidsIndex = result2[0]
-            naturalIndex = result2[1]
-            
-            //print(steroidsIndex)
-            
-            self.classificationLabel = result
-        }
-    }
 }
-
-
-
-
-
-
-
-
-
-

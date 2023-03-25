@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct TabBar: View {
-    
     var body: some View {
         TabsLayoutView() 
     }
@@ -27,8 +26,6 @@ struct TabsLayoutView: View {
                         HomeView()
                     } else if selectedTab == .second {
                         SecondaryView()
-                    } else if selectedTab == .info {
-                        InfoView()
                     }
                     
                     ZStack {
@@ -52,7 +49,7 @@ struct TabsLayoutView: View {
                         .clipped()
                     }
                     .frame(height: 90, alignment: .center)
-                    .padding(.horizontal, 60)
+                    .padding(.horizontal, 100)
                     
                     Spacer()
                 }
@@ -148,7 +145,7 @@ enum Tab: Int, Identifiable, CaseIterable, Comparable {
         lhs.rawValue < rhs.rawValue
     }
     
-    case home, second, info
+    case home, second
     
     internal var id: Int { rawValue }
     
@@ -158,8 +155,6 @@ enum Tab: Int, Identifiable, CaseIterable, Comparable {
             return "pills"
         case .second:
             return "syringe"
-        case .info:
-            return "list.clipboard"
             
         }
     }
@@ -170,8 +165,6 @@ enum Tab: Int, Identifiable, CaseIterable, Comparable {
             return "Home"
         case .second:
             return "Games"
-        case .info:
-            return "Apps"
             
         }
     }
@@ -181,8 +174,6 @@ enum Tab: Int, Identifiable, CaseIterable, Comparable {
         case .home:
             return .indigo
         case .second:
-            return .pink
-        case .info:
             return .orange
             
         }
