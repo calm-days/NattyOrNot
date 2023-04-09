@@ -1,12 +1,3 @@
-//
-//  TabButton.swift
-//  NattyOrNot
-//
-//  Created by Roman Liukevich on 4/9/23.
-//
-
-import SwiftUI
-
 import SwiftUI
 
 struct TabButton: View {
