@@ -2,10 +2,7 @@ import SwiftUI
 import CoreML
 import Vision
 
-
 struct HomeView: View {
-    @State private var selection: Int = 0
-    
     @State private var showingImagePicker = false
     @State private var inputImage: UIImage?
     @State private var image: Image?
@@ -13,23 +10,15 @@ struct HomeView: View {
     @State private var steroidsIndex: Double = 0.0
     @State private var naturalIndex: Double = 0.0
     
+    var request: VNCoreMLRequest?
     let model = NatyOrNotClassifier2()
     @State private var classificationLabel: String = "fake natty = 0% \n natty = 0%"
     @State private var classifyDidPressed: Bool = false
     
-    var request: VNCoreMLRequest?
-    let image1 = UIImage(named: "chris")
-    
-    @State var enteredNumber = 0
-    @State var total = 0
-
-    
     var body: some View {
-        
         VStack {
             ZStack {
                 Color.offWhite
-                    //.ignoresSafeArea()
                     .edgesIgnoringSafeArea(.bottom)
                 
                 VStack(spacing: 25){
@@ -50,13 +39,10 @@ struct HomeView: View {
                                 .foregroundColor(.offWhite)
                                 .frame(maxWidth: .infinity, minHeight: 400, idealHeight: 550, maxHeight: 800)
                                 .cornerRadius(20)
-                            
-                            //.padding()
                         }
                     }
                     .buttonStyle(NeumorphicButton(shape: RoundedRectangle(cornerRadius: 20)))
                     .padding(.horizontal, 25)
-                    
                     
                     // MARK: results tab
                     
@@ -103,7 +89,6 @@ struct HomeView: View {
                             if !classifyDidPressed {
                                 classify()
                                 writeDescription()
-                                //addNumberWithRollingAnimation()
                                 classifyDidPressed = true
                             }
                         } label: {
@@ -134,7 +119,6 @@ struct HomeView: View {
     }
     
     func classify() {
-        total = 0
         guard let image = inputImage,
               let resizedImage = image.resizeImageTo(size:CGSize(width: 224, height: 224)),
               let buffer = resizedImage.convertToBuffer() else {
@@ -151,8 +135,6 @@ struct HomeView: View {
             self.classificationLabel = result
         }
     }
-    
-    
     
     func writeDescription() {
         let array = classificationLabel.components(separatedBy: CharacterSet.newlines)
@@ -183,7 +165,6 @@ struct HomeView: View {
                 let numberRange = Range(match.range, in: inputStringSecond)!
                 if let number = Double(inputStringSecond[numberRange]) {
                     naturalIndex = number.rounded(.towardZero)
-                    enteredNumber = Int(naturalIndex)
                 } else {
                     print("Failed to convert matched string to Double.")
                 }
@@ -192,32 +173,6 @@ struct HomeView: View {
             }
         } else {
             print("Failed to create regular expression.")
-        }
-    }
-    
-    
-    func addNumberWithRollingAnimation() {
-        withAnimation {
-            // Decide on the number of animation steps
-            let animationDuration = 1000 // milliseconds
-            let steps = min(abs(self.enteredNumber), 100)
-            let stepDuration = (animationDuration / steps)
-            
-            // add the remainder of our entered num from the steps
-            total += self.enteredNumber % steps
-            // For each step
-            (0..<steps).forEach { step in
-                // create the period of time when we want to update the number
-                // I chose to run the animation over a second
-                let updateTimeInterval = DispatchTimeInterval.milliseconds(step * stepDuration)
-                let deadline = DispatchTime.now() + updateTimeInterval
-                
-                // tell dispatch queue to run task after the deadline
-                DispatchQueue.main.asyncAfter(deadline: deadline) {
-                    // Add piece of the entire entered number to our total
-                    self.total += Int(self.enteredNumber / steps)
-                }
-            }
         }
     }
 }

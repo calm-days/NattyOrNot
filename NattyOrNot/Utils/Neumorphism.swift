@@ -1,10 +1,3 @@
-//
-//  Neumorphism.swift
-//  NattyOrNot
-//
-//  Created by Roman Liukevich on 2/24/23.
-//
-
 import Foundation
 import Vision
 import SwiftUI
@@ -18,7 +11,6 @@ struct NeumorphicButton<S: Shape>: ButtonStyle {
     
     func makeBody(configuration: Self.Configuration) -> some View {
         configuration.label
-            //.padding(15)
             .background(Background(isPressed: configuration.isPressed, shape: shape))
     }
 }

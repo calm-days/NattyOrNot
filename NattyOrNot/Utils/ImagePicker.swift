@@ -1,10 +1,3 @@
-//
-//  ImagePicker.swift
-//  NattyOrNot
-//
-//  Created by Roman Liukevich on 9/19/22.
-//
-
 import Foundation
 import PhotosUI
 import SwiftUI
@@ -37,9 +30,7 @@ struct ImagePicker: UIViewControllerRepresentable {
         
         func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
             picker.dismiss(animated: true)
-            
             guard let provider = results.first?.itemProvider else { return }
-            
             if provider.canLoadObject(ofClass: UIImage.self) {
                 provider.loadObject(ofClass: UIImage.self) { image, _ in
                     self.parent.image = image as? UIImage
@@ -53,7 +44,6 @@ struct ImagePicker: UIViewControllerRepresentable {
 extension UIImage {
     
     func resizeImageTo(size: CGSize) -> UIImage? {
-        
         UIGraphicsBeginImageContextWithOptions(size, false, 0.0)
         self.draw(in: CGRect(origin: CGPoint.zero, size: size))
         let resizedImage = UIGraphicsGetImageFromCurrentImageContext()!
@@ -62,7 +52,6 @@ extension UIImage {
     }
     
     func convertToBuffer() -> CVPixelBuffer? {
-        
         let attributes = [
             kCVPixelBufferCGImageCompatibilityKey: kCFBooleanTrue,
             kCVPixelBufferCGBitmapContextCompatibilityKey: kCFBooleanTrue
@@ -106,5 +95,4 @@ extension UIImage {
         
         return pixelBuffer
     }
-    
 }
